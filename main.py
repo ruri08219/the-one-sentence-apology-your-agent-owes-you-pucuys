@@ -22,9 +22,21 @@ ENTRY = (
 )
 
 
+def validate_entry(text: str) -> str:
+    """Gate-check the entry the way the sealed scorer will.
+
+    One sentence, UTF-8, 1-200 characters, not only white space.
+    Returns the stripped text unchanged when it passes.
+    """
+    clean = text.strip()
+    assert clean, "entry is empty or only white space"
+    assert 1 <= len(clean) <= 200, f"entry length {len(clean)} outside 1-200"
+    assert "\n" not in clean, "entry must stay one clean sentence"
+    return clean
+
+
 def main() -> None:
-    text = ENTRY.strip()
-    assert 1 <= len(text) <= 200, f"entry length {len(text)} outside 1-200"
+    text = validate_entry(ENTRY)
     out_dir = os.environ.get("OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
     with open(os.path.join(out_dir, "entry.txt"), "w", encoding="utf-8") as f:
